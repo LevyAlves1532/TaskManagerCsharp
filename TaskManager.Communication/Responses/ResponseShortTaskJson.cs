@@ -2,7 +2,7 @@
 
 namespace TaskManager.Communication.Responses;
 
-public class ResponseRegisteredTaskJson
+public class ResponseShortTaskJson
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

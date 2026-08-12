@@ -7,7 +7,7 @@ namespace TaskManager.Application.UseCases.Task.Register;
 
 public class RegisterTaskUseCase
 {
-    public ResponseRegisteredTaskJson Execute(RequestRegisterTaskJson request)
+    public ResponseShortTaskJson Execute(RequestRegisterTaskJson request)
     {
         string name = request.Name.Trim();
 
@@ -36,7 +36,7 @@ public class RegisterTaskUseCase
             throw new ExceptionFormBodyValidate("O status da tarefa está com um valor inválido");
         }
 
-        return new ResponseRegisteredTaskJson
+        return new ResponseShortTaskJson
         {
             Id = Guid.NewGuid(),
             Name = request.Name,
