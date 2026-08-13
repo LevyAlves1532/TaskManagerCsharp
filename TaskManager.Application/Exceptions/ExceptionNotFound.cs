@@ -1,0 +1,8 @@
+﻿namespace TaskManager.Application.Exceptions;
+
+public class ExceptionNotFound : Exception
+{
+    public ExceptionNotFound(string? message) : base(message)
+    {
+    }
+}

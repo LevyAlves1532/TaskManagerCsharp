@@ -1,14 +1,18 @@
 ﻿using TaskManager.Application.Exceptions;
 using TaskManager.Communication.Enums;
 using TaskManager.Communication.Requests;
-using TaskManager.Communication.Responses;
 
-namespace TaskManager.Application.UseCases.Task.Register;
+namespace TaskManager.Application.UseCases.Task.UpdateById;
 
-public class RegisterTaskUseCase
+public class UpdateTaskByIdUseCase
 {
-    public ResponseShortTaskJson Execute(RequestTaskJson request)
+    public void Execute(Guid id, RequestTaskJson request)
     {
+        if (false)
+        {
+            throw new ExceptionNotFound("Tarefa não encontrada");
+        }
+
         string name = request.Name.Trim();
 
         if (name.Length == 0)
@@ -35,13 +39,5 @@ public class RegisterTaskUseCase
         {
             throw new ExceptionFormBodyValidate("O status da tarefa está com um valor inválido");
         }
-
-        return new ResponseShortTaskJson
-        {
-            Id = Guid.NewGuid(),
-            Name = request.Name,
-            DueDate = request.DueDate,
-            Status = request.Status,
-        };
     }
 }

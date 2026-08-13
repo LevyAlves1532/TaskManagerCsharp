@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.UseCases.Task.GetAll;
+using TaskManager.Application.UseCases.Task.GetById;
 using TaskManager.Application.UseCases.Task.Register;
+using TaskManager.Application.UseCases.Task.UpdateById;
+using TaskManager.Application.Utils;
 using TaskManager.Communication.Requests;
 using TaskManager.Communication.Responses;
 
@@ -15,7 +18,7 @@ public class TaskController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ResponseShortTaskJson), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ResponseErrorsJson), StatusCodes.Status400BadRequest)]
-    public IActionResult Register([FromBody] RequestRegisterTaskJson request)
+    public IActionResult Register([FromBody] RequestTaskJson request)
     {
         try
         {
@@ -27,11 +30,7 @@ public class TaskController : ControllerBase
         }
         catch (ExceptionFormBodyValidate ex)
         {
-            var responseErrorsJson = new ResponseErrorsJson();
-
-            responseErrorsJson.Errors.Add(ex.Message);
-
-            return BadRequest(responseErrorsJson);
+            return BadRequest(PrintError.Execute(ex.Message));
         }
     }
 
@@ -50,5 +49,49 @@ public class TaskController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpGet]
+    [Route("{id}")]
+    [ProducesResponseType(typeof(ResponseTaskJson), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResponseErrorsJson), StatusCodes.Status404NotFound)]
+    public IActionResult GetById([FromRoute] Guid id)
+    {
+        try
+        {
+            var useCase = new GetTaskByIdUseCase();
+
+            var response = useCase.Execute(id);
+
+            return Ok(response);
+        } catch (ExceptionNotFound ex)
+        {
+            return NotFound(PrintError.Execute(ex.Message));
+        }
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseErrorsJson), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ResponseErrorsJson), StatusCodes.Status404NotFound)]
+    public IActionResult Update([FromRoute] Guid id, RequestTaskJson request)
+    {
+        try
+        {
+            var useCase = new UpdateTaskByIdUseCase();
+
+            useCase.Execute(id, request);
+
+            return NoContent();
+        }
+        catch (ExceptionNotFound ex)
+        {
+            return NotFound(PrintError.Execute(ex.Message));
+        }
+        catch (ExceptionFormBodyValidate ex)
+        {
+            return BadRequest(PrintError.Execute(ex.Message));
+        }
     }
 }
