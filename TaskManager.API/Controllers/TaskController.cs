@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Exceptions;
+using TaskManager.Application.UseCases.Task.DeleteById;
 using TaskManager.Application.UseCases.Task.GetAll;
 using TaskManager.Application.UseCases.Task.GetById;
 using TaskManager.Application.UseCases.Task.Register;
@@ -92,6 +93,25 @@ public class TaskController : ControllerBase
         catch (ExceptionFormBodyValidate ex)
         {
             return BadRequest(PrintError.Execute(ex.Message));
+        }
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseErrorsJson), StatusCodes.Status404NotFound)]
+    public IActionResult Delete([FromRoute] Guid id)
+    {
+        try
+        {
+            var useCase = new DeleteTaskByIdUseCase();
+
+            useCase.Execute(id);
+
+            return NoContent();
+        } catch (ExceptionNotFound ex)
+        {
+            return NotFound(PrintError.Execute(ex.Message));
         }
     }
 }
